@@ -49,4 +49,26 @@ router.post('/login', function (req, res) {
     }
   })
 })
+
+router.post('/update', function (req, res) {
+  // 浏览器会把cookies回给服务器
+  const userid = req.cookies.userid
+  if (!userid) {
+    return res.send({ code: 1, msg: '请先登录' })
+  }
+  const user = req.body
+  // 通过id找到用户，更新user用户，设置回调
+  UserModel.findByIdAndUpdate({ _id: userid }, user, function (error, oldUser) {
+    if (!oldUser) {
+      // cookie已经失效，通知浏览器删除
+      res.clearCookie('userid')
+      res.send({ code: 1, msg: '请先登录' })
+    } else {
+      const { _id, username, type } = oldUser
+      const data = Object.assign(user, { _id, username, type })
+      res.send({ code: 0, data })
+    }
+  })
+})
+
 module.exports = router;
