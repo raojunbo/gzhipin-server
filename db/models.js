@@ -13,7 +13,7 @@ con.on('connected', function () {
 const userSchema = mongoose.Schema({
     username: { type: String, require: true },
     password: { type: String, require: true },
-    type: { type: String, require: true },
+    usertype: { type: String, require: true },
     header: { type: String },
     post: { type: String },
     info: { type: String },

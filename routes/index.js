@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
 
 // 注册一个路由：用户注册
 router.post('/register', function (req, res) {
-  const { username, password, type } = req.body
+  const { username, password, usertype } = req.body
   // 读取请求参数数据
   UserModel.findOne({ username }, function (err, user) {
     if (user) {
@@ -20,10 +20,10 @@ router.post('/register', function (req, res) {
         msg: '此用户已经存在'
       })
     } else {
-      new UserModel({ username, password: md5(password), type }).save(function (error, user) {
+      new UserModel({ username, password: md5(password), usertype }).save(function (error, user) {
         // 生成一个cookie,并设置有存活时间
         res.cookie('userid', user._id, { maxAge: 1000 * 60 * 60 * 24 * 7 })
-        const data = { username, type, _id: user._id }
+        const data = { username, usertype, _id: user._id }
         res.send({ code: 0, data })
       })
     }
@@ -64,8 +64,8 @@ router.post('/update', function (req, res) {
       res.clearCookie('userid')
       res.send({ code: 1, msg: '请先登录' })
     } else {
-      const { _id, username, type } = oldUser
-      const data = Object.assign(user, { _id, username, type })
+      const { _id, username, usertype } = oldUser
+      const data = Object.assign(user, { _id, username, usertype })
       res.send({ code: 0, data })
     }
   })
