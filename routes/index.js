@@ -71,4 +71,13 @@ router.post('/update', function (req, res) {
   })
 })
 
+router.get('/user', function (req, res) {
+  const userid = req.cookies.userid
+  if (!userid) {
+    return res.send({ code: 1, msg: '请先登录' })
+  }
+  UserModel.findOne({ _id: userid }, filter, function (error, user) {
+    res.send({ code: 0, data: user })
+  })
+})
 module.exports = router;
