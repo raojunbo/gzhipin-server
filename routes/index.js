@@ -35,7 +35,7 @@ router.post('/login', function (req, res) {
   UserModel.findOne({ username, password: md5(password) }, function (error, user) {
     // 如果用户存在
     if (user) {
-      res.cookie('userid', user._id, { maxAge: 1000 * 60 * 60 * 24 * 7 })
+      res.cookie('userid', user._id.toString(), { maxAge: 1000 * 60 * 60 * 24 * 7 })
       res.send({
         code: 0,
         data: user
@@ -73,10 +73,11 @@ router.post('/update', function (req, res) {
 
 router.get('/user', function (req, res) {
   const userid = req.cookies.userid
+  console.log("这是收到的" + userid)
   if (!userid) {
     return res.send({ code: 1, msg: '请先登录' })
   }
-  UserModel.findOne({ _id: userid }, filter, function (error, user) {
+  UserModel.findOne({ _id: userid }, function (error, user) {
     res.send({ code: 0, data: user })
   })
 })
