@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 const md5 = require('blueimp-md5')
-const { UserModel } = require('../db/models')
+const { UserModel } = require('../db/models');
+const { route } = require('../app');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -79,6 +80,15 @@ router.get('/user', function (req, res) {
   }
   UserModel.findOne({ _id: userid }, function (error, user) {
     res.send({ code: 0, data: user })
+  })
+})
+
+// 根据用户类型获取
+router.get('/getUserList', function (req, res) {
+  console.log("俩了吗")
+  const { usertype } = req.query
+  UserModel.find({ usertype }, function (error, users) {
+    res.send({code: 0, data:users})
   })
 })
 module.exports = router;

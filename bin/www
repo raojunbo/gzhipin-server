@@ -20,10 +20,16 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+const io = require('socket.io')(server)
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+io.on('connection', socket => {
+  console.log("socket.io 链接成功")
+  socket.on('sendMsg', (msg) => {
+    console.log('服务器接收到浏览器的消息', data)
+    io.emit('receiveMsg', data.name + '_' + data.date)
+    console.log('服务器向浏览器发送消息', data.name + '_' + data.date)
+  })
+})
 
 server.listen(port);
 server.on('error', onError);
