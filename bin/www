@@ -21,13 +21,23 @@ app.set('port', port);
 
 var server = http.createServer(app);
 const io = require('socket.io')(server)
+io.listen(4001)
 
+// 监视与客户端的链接
 io.on('connection', socket => {
-  console.log("socket.io 链接成功")
-  socket.on('sendMsg', (msg) => {
+
+  console.log("有一个客户端链接到了服务器")
+
+  socket.on('sendMsg', (data) => {
     console.log('服务器接收到浏览器的消息', data)
-    io.emit('receiveMsg', data.name + '_' + data.date)
-    console.log('服务器向浏览器发送消息', data.name + '_' + data.date)
+
+    // 向全局发送消息
+    // io.emit('receiveMsg', data.name + '_' +  Date.now())
+    
+    // 向某一个发送消息
+    socket.emit('receiveMsg', data.name + '_' +  Date.now())
+
+    console.log('服务器向浏览器发送消息', data.name + '_' +  Date.now())
   })
 })
 

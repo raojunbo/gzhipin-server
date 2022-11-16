@@ -10,6 +10,7 @@ const con = mongoose.connection
 con.on('connected', function () {
     console.log("数据库链接成功")
 })
+
 const userSchema = mongoose.Schema({
     username: { type: String, require: true },
     password: { type: String, require: true },
@@ -24,3 +25,16 @@ const userSchema = mongoose.Schema({
 const UserModel = mongoose.model('user', userSchema)
 // 导出构造函数
 exports.UserModel = UserModel
+
+
+const chatSchema = mongoose.Schema({
+    form: {type: String, require: true},
+    to: {type: String, require: true},
+    chat_id:{type: String,require: true},
+    content: {type: String,require: true},// 内容
+    read: {type: Boolean, default: false},//标识是否已读
+    create_time: {type: Number}
+})
+
+const ChatModel = mongoose.model('chat', chatSchema)
+exports.ChatModel = ChatModel

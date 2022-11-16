@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const md5 = require('blueimp-md5')
-const { UserModel } = require('../db/models');
+const { UserModel, ChatModel } = require('../db/models');
 const { route } = require('../app');
 
 /* GET home page. */
@@ -88,7 +88,38 @@ router.get('/getUserList', function (req, res) {
   console.log("俩了吗")
   const { usertype } = req.query
   UserModel.find({ usertype }, function (error, users) {
-    res.send({code: 0, data:users})
+    res.send({ code: 0, data: users })
   })
 })
 module.exports = router;
+
+// 获取消息列表
+router.get('/msglist', function (req, res) {
+  const userid = req.cookies.userid
+  // 获取所有的用户
+  UserModel.find(function (err, userDocs) {
+    // const users = {}
+    // userDocs.forEach(doc => {
+    //   users[doc._id] = { username: doc.username, header: doc.header }
+    // })
+    const users = userDocs.reduce((users, doc) => {
+      users[doc._id] = { username: doc.username, header: doc.header }
+    }, {})
+
+    // 与我相关所有消息
+    ChatModel.find({ '$or': [{ from: userid }, { to: userid }] }, function (err, chats) {
+      res.send({ code: 0, data: { users, chats } })
+    })
+  })
+})
+
+// 标记该消息已经读取
+router.post('/readmsg', function (req, res) {
+  const from = req.body.from
+  const to = req.cookies.userid
+  ChatModel.update({ from, to, read: false }, { read: true }, { multi: true }, function (err, doc) {
+    console.log("read msg" + doc)
+    res.send({ code: 0, data: doc.nModified })
+  })
+
+})
