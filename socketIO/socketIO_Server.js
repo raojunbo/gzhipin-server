@@ -1,7 +1,7 @@
 
-import {ChatModel} from '../db/models'
 
-export default function (server) {
+const {ChatModel} = require('../db/models')
+module.exports = function (server) {
     const io = require('socket.io')(server)
     io.listen(4001)
 
@@ -11,15 +11,28 @@ export default function (server) {
         console.log("有一个客户端链接到了服务器")
 
         socket.on('sendMsg', function ({ from, to, content }) {
-            console.log('服务器接收到浏览器的消息', { from, to, content })
-            const chat_id =  [from, to].sort().join('_')
+            // console.log('服务器接收到浏览器的消息', { from, to, content })
             const create_time = Date.now()
-            new ChatModel({from, to, content, chat_id, create_time}).save(function(err,chatMsg){
-                // 暂时向所有链接都发送消息
-                console.log('服务器向到浏览器的消息', { from, to, content })
-                io.emit("receiveMsg",chatMsg)
+            const chat_id = [from, to].sort().join("-") // 保证2个人相互聊天结果一样
+
+            const chatMsg = { content, from, to, create_time, chat_id }
+            
+            console.log("这是即将要处理的消息2" + chatMsg)
+
+            new ChatModel(chatMsg).save(function (error, chatMsgDoc) {
+                // 发送给所有连接上的浏览器
+                console.log("这里是没有写进去吗" + error)
+                io.emit('receiveMsg', chatMsgDoc)
             })
         })
     })
 }
+
+
+// new UserModel({ username, password: md5(password), usertype }).save(function (error, user) {
+//     // 生成一个cookie,并设置有存活时间
+//     res.cookie('userid', user._id, { maxAge: 1000 * 60 * 60 * 24 * 7 })
+//     const data = { username, usertype, _id: user._id }
+//     res.send({ code: 0, data })
+//   })
 

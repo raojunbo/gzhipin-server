@@ -94,17 +94,16 @@ router.get('/getUserList', function (req, res) {
 module.exports = router;
 
 // 获取消息列表
-router.get('/msglist', function (req, res) {
+router.get('/msgList', function (req, res) {
   const userid = req.cookies.userid
   // 获取所有的用户
   UserModel.find(function (err, userDocs) {
-    // const users = {}
-    // userDocs.forEach(doc => {
-    //   users[doc._id] = { username: doc.username, header: doc.header }
-    // })
-    const users = userDocs.reduce((users, doc) => {
+    const users = {}
+    userDocs.forEach(doc => {
       users[doc._id] = { username: doc.username, header: doc.header }
-    }, {})
+    })
+    console.log("即将要返回给服务器的" + JSON.stringify(users))
+
 
     // 与我相关所有消息
     ChatModel.find({ '$or': [{ from: userid }, { to: userid }] }, function (err, chats) {
