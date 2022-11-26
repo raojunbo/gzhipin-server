@@ -85,7 +85,6 @@ router.get('/user', function (req, res) {
 
 // 根据用户类型获取
 router.get('/getUserList', function (req, res) {
-  console.log("俩了吗")
   const { usertype } = req.query
   UserModel.find({ usertype }, function (error, users) {
     res.send({ code: 0, data: users })
@@ -96,6 +95,7 @@ module.exports = router;
 // 获取消息列表
 router.get('/msgList', function (req, res) {
   const userid = req.cookies.userid
+  console.log("拉了吗" + userid)
   // 获取所有的用户
   UserModel.find(function (err, userDocs) {
     const users = {}
@@ -120,5 +120,4 @@ router.post('/readmsg', function (req, res) {
     console.log("read msg" + doc)
     res.send({ code: 0, data: doc.nModified })
   })
-
 })
